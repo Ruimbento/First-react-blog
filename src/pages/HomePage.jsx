@@ -8,13 +8,7 @@ import FormControl from "react-bootstrap/FormControl";
 import BlogPostCard from "../components/BlogPostCard";
 import Navigation from "../components/Navigation";
 
-import { StateContext } from "../App";
-
 function HomePage(props) {
-  const [state, dispatch] = React.useContext(StateContext);
-
-  console.log(state.user);
-
   const [posts, setPosts] = React.useState([]);
   const [articles, setArticles] = React.useState([]);
   const [showingPosts, setShowingPosts] = React.useState(8);
@@ -48,7 +42,7 @@ function HomePage(props) {
   return (
     <div id="HomePage">
       <header>
-        <Navigation user={state.user} />
+        <Navigation />
         <div className="container">
           <div className="blog-header col-md-9">
             <p>
@@ -101,7 +95,6 @@ function HomePage(props) {
         <div className="blog-title row">
           <div className="container">
             <h2 className="col-md-10">Статьи</h2>
-            <input className="col-md-2" type="text" placeholder="Search" />
           </div>
         </div>
         <div className="blog-container">

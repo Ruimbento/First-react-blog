@@ -1,16 +1,13 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
 
-import { StateContext } from "../App";
-
 function LoginPage() {
   const TEST_PASSWORD = "353356365361366353356365361366";
   const TEST_EMAIL = "admin@example.com";
 
   const [passwordInput, setPasswordInput] = React.useState("");
   const [emailInput, setEmailInput] = React.useState("");
-
-  const [state, dispatch] = React.useContext(StateContext);
+  const [user, setUser] = React.useState({ name: "", isLogin: false });
 
   const validateUser = () => {
     const passwordArray = passwordInput.split("");
@@ -28,29 +25,15 @@ function LoginPage() {
       return false;
     }
 
-    let timestamp = new Date();
-
-    setUser({
-      name: emailInput,
-      isLogin: true,
-      expired: timestamp.setMinutes(timestamp.getMinutes() + 15),
-    });
+    setUser({ name: emailInput, isLogin: true });
     return true;
   };
 
-  const setUser = (data) => {
-    dispatch({
-      type: "SET_USER",
-      payload: data,
-    });
-  };
-
   React.useEffect(() => {
-    console.log(state.user);
-    if (state.user.isLogin) {
+    if (user.isLogin) {
       window.location.pathname = "";
     }
-  }, [state.user]);
+  }, [user]);
 
   return (
     <div className="login">
