@@ -25,10 +25,6 @@ function BlogPostCard({ post }) {
           <h4 className="post-title">{post.title}</h4>
           <p className="post-description">{post.text}</p>
           <p className="post-date">{parseDate(post.createdAt)}</p>
-          <div className="admin-buttons">
-            <p className="admin-buttons-edit">Edit</p>
-            <p className="admin-buttons-delete">Delete</p>
-          </div>
         </div>
       </div>
     </div>
