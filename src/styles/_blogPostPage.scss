@@ -74,4 +74,40 @@
       }
     }
   }
+
+  .comments{
+    padding: 100px 15px 50px;
+
+    h4{
+      font-weight: 800;
+    }
+
+    .comment{
+      background: white;
+      padding: 25px;
+      border-radius: 5px;
+
+      &-block{
+        margin: 10px 0;
+      }
+
+      &-text{
+        p{
+          margin-bottom: 0;
+        }
+      }
+
+    }
+  }
+
+  .add-comment{
+    padding: 50px 0;
+
+    .comment-input{
+      background: white;
+      padding: 25px;
+      margin: 10px 0;
+      border-radius: 5px;;
+    }
+  }
 }
