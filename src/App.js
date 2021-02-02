@@ -1,17 +1,11 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { reducer, initialState } from "./reducer";
 
 import HomePage from "./pages/HomePage";
 import BlogPostPage from "./pages/BlogPostPage";
 import LoginPage from "./pages/LoginPage";
 
-export const StateContext = React.createContext();
-
 function App() {
-  const [state, dispatch] = React.useReducer(reducer, initialState);
-  console.log(state.user);
-
   const route = function () {
     let URN = window.location.pathname;
     let pathArray = URN.split("/");
@@ -59,13 +53,7 @@ function App() {
     return NaN;
   };
 
-  return (
-    <div className="app">
-      <StateContext.Provider value={[state, dispatch]}>
-        {route()}
-      </StateContext.Provider>
-    </div>
-  );
+  return <div className="app">{route()}</div>;
 }
 
 export default App;
