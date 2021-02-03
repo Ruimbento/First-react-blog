@@ -1,56 +1,57 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
-
-import { StateContext } from "../App";
+import { StateContext } from "../reducer";
+import { useHistory } from "react-router-dom";
 
 function LoginPage() {
   const TEST_PASSWORD = "353356365361366353356365361366";
   const TEST_EMAIL = "admin@example.com";
 
+  const [state, dispatch] = React.useContext(StateContext);
   const [passwordInput, setPasswordInput] = React.useState("");
   const [emailInput, setEmailInput] = React.useState("");
 
-  const [state, dispatch] = React.useContext(StateContext);
+  const history = useHistory();
 
-  const validateUser = () => {
+  const validateUser = (e) => {
+    e.preventDefault();
+
     const passwordArray = passwordInput.split("");
     const cryptedPassword = passwordArray
       .map((value) => value.charCodeAt(0) ^ 256)
       .join("");
 
     if (emailInput !== TEST_EMAIL) {
-      alert("Неправильный email");
+      alert("Неправильная почта");
       return false;
     }
 
     if (cryptedPassword !== TEST_PASSWORD) {
-      alert("Неправильный password");
+      alert("Неправильный пароль");
       return false;
     }
 
-    let timestamp = new Date();
-
-    setUser({
-      name: emailInput,
-      isLogin: true,
-      expired: timestamp.setMinutes(timestamp.getMinutes() + 15),
-    });
-    return true;
+    setUser();
   };
 
-  const setUser = (data) => {
+  const setUser = () => {
+    let timestamp = new Date();
+
     dispatch({
-      type: "SET_USER",
-      payload: data,
+      type: "LOGIN",
+      payload: {
+        name: emailInput,
+        isLogin: true,
+        expired: timestamp.setMinutes(timestamp.getMinutes() + 15),
+      },
     });
   };
 
   React.useEffect(() => {
-    console.log(state.user);
     if (state.user.isLogin) {
-      window.location.pathname = "";
+      history.push("/");
     }
-  }, [state.user]);
+  }, [state.user.isLogin]);
 
   return (
     <div className="login">
@@ -78,9 +79,21 @@ function LoginPage() {
               onChange={(e) => setPasswordInput(e.target.value)}
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
+          <Form.Group controlId="formButtons" className="formButtons">
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+            <Button
+              variant="danger"
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                history.push("/");
+              }}
+            >
+              Go Home
+            </Button>
+          </Form.Group>
         </Form>
       </div>
     </div>

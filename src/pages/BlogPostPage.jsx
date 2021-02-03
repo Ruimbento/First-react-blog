@@ -2,91 +2,142 @@ import React from "react";
 import axios from "axios";
 import faker from "faker";
 import { Form, Button } from "react-bootstrap";
+import { StateContext } from "../reducer";
+import { generatePostText } from "../utils";
 
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 
-function BlogPostPage({ postId, type }) {
-  const [isLoading, setIsLoading] = React.useState(true);
+function BlogPostPage(props) {
+  const [state, dispatch] = React.useContext(StateContext);
   const [post, setPost] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [comments, setComments] = React.useState([]);
   const [commentAuthor, setCommentAuthor] = React.useState("");
   const [commentText, setCommentText] = React.useState("");
 
+  // Использую split() + pop() из-за того, что нужен тип материала. Можно заменить props.match.params.id
+  let urnArray = props.match.url.split("/");
+  const postId = urnArray.pop();
+  const type = urnArray.pop();
+
   React.useEffect(() => {
-    getPostData();
-    getPostComments();
+    let postData = state[type + "s"].filter((item) => {
+      return item.id === postId;
+    })[0];
+
+    if (postData) {
+      setPost(postData);
+    } else {
+      fetchPost();
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [state.posts, state.articles]);
+
+  React.useEffect(() => {
+    let commentsData = state[type + "sComments"].filter((item) => {
+      return item.postId === postId;
+    });
+
+    if (commentsData.length) {
+      setComments(commentsData);
+    } else {
+      fetchPostComments();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.postsComments, state.articlesComments]);
 
   React.useEffect(() => {
     if (post.id && comments) {
       setIsLoading(false);
     }
+  }, [post, comments]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [post]);
-
-  const getPostData = () => {
+  const fetchPost = () => {
     axios
-      .get(`https://5c3755177820ff0014d92711.mockapi.io/${type}/${postId}`)
+      .get(`https://5c3755177820ff0014d92711.mockapi.io/${type}s/${postId}`)
       .then(({ data }) => {
-        type === "posts"
-          ? (data.imageBig = `https://picsum.photos/1200/600?${postId}`)
-          : (data.imageBig = data.image);
+        data = generatePostText(data);
+        data.type = type;
 
-        data.description = data.text;
+        if (type === "post") {
+          data.image = "https://picsum.photos/400/300?" + data.id;
+          data.imageBig = "https://picsum.photos/1200/600?" + data.id;
+        } else {
+          data.imageBig = data.image;
+        }
 
-        let text = new Array(faker.random.number({ min: 3, max: 8 })).fill(
-          faker.lorem.sentences(20)
-        );
-
-        const images = new Array(faker.random.number({ min: 2, max: 3 })).fill(
-          faker.image.unsplash.imageUrl(600, 400)
-        );
-
-        // Рандомная сортировка массива с текстом и картинкой, для иммитации написаного поста.
-        data.text = text.concat(images).sort((a, b) => {
-          return 0.5 - Math.random();
+        dispatch({
+          type: `ADD_${type.toUpperCase()}`,
+          payload: {
+            post: data,
+          },
         });
-
-        setPost(data);
+      })
+      .catch((error) => {
+        alert(error.message);
       });
   };
 
-  const getPostComments = () => {
+  const fetchPostComments = () => {
     axios
       .get(
-        `https://5c3755177820ff0014d92711.mockapi.io/${type}/${postId}/comments`
+        `https://5c3755177820ff0014d92711.mockapi.io/${type}s/${postId}/comments`
       )
-      .then(({ data }) => setComments(data));
+      .then(({ data }) => {
+        let difference = data.filter(
+          ({ id: dataId }) =>
+            !comments.some(({ id: commentId }) => dataId === commentId)
+        );
+
+        difference.map((item) =>
+          dispatch({
+            type: `SAVE_${type.toUpperCase()}_COMMENT`,
+            payload: {
+              postComments: item,
+            },
+          })
+        );
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
   };
 
   const addComment = async (e) => {
     e.preventDefault();
-    await axios.post(
-      `https://5c3755177820ff0014d92711.mockapi.io/${type}/${postId}/comments`,
-      {
-        postId: postId,
-        createdAt: new Date(),
-        name: commentAuthor,
-        text: commentText,
-      }
-    );
+    try {
+      await axios.post(
+        `https://5c3755177820ff0014d92711.mockapi.io/${type}s/${postId}/comments`,
+        {
+          postId: postId,
+          createdAt: new Date(),
+          name: commentAuthor,
+          text: commentText,
+        }
+      );
+    } catch (e) {
+      alert(e.message);
+    }
 
     setCommentAuthor("");
     setCommentText("");
 
-    getPostComments();
+    fetchPostComments();
   };
 
   return (
     <div id="BlogPostPage">
       <header
-        style={{
-          backgroundImage: `url(${post.imageBig})`,
-        }}
+        style={
+          !isLoading
+            ? {
+                backgroundImage: `url(${post.imageBig})`,
+              }
+            : null
+        }
       >
         <Navigation />
         <div className="container title-container">

@@ -33,6 +33,13 @@
     font-size: 24px;
   }
 
+  .add{
+    text-align: end;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--green);
+  }
+
   .post{
     margin-bottom: 50px;
 
@@ -40,8 +47,6 @@
       margin: 0 25px;
       border-radius: 10px;
       background: white;
-      cursor: pointer;
-
     }
 
     img{
@@ -64,11 +69,17 @@
       font-weight: 800;
     }
 
+    &-link{
+      color: $blackColor;
+      text-decoration: none;
+    }
+
     &-description{
       font-size: 14px;
       margin: 0 0 10px;
       letter-spacing: 0.25px;
       line-height: 1.5;
+      color: $grayColor;
     }
 
     &-blog-data{
@@ -78,9 +89,29 @@
     }
   }
 
+
   .showPosts{
     font-weight: 800;
     margin: 0 0 25px;
     cursor: pointer;
+  }
+
+  .adminSettings{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+
+    p{
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .editPost{
+      color: $blueColor;
+    }
+
+    .deletePost{
+      color: $redColor;
+    }
   }
 }

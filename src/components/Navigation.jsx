@@ -1,46 +1,38 @@
 import React from "react";
-import { StateContext } from "../App";
+import { Link } from "react-router-dom";
+import { StateContext } from "../reducer";
 
-function Navigation({ user }) {
+function Navigation() {
   const [state, dispatch] = React.useContext(StateContext);
 
-  console.log(user);
-  console.log(state.user);
-  let timestamp = new Date();
-  let data = {
-    name: "Test",
-    isLogin: true,
-    expired: timestamp.setMinutes(timestamp.getMinutes() + 15),
-  };
-
-  const setUser = (data) => {
+  const logout = () => {
     dispatch({
-      type: "SET_USER",
-      payload: data,
+      type: "LOGOUT",
     });
   };
 
   return (
     <div className="container">
       <div className="logo">
-        <a href="/">Obscure</a>
+        <Link to="/">Obscure</Link>
       </div>
       <div className="navbar">
         <ul className="navbar-list">
           <li className="navbar-item">
-            <a href="/">Home</a>
+            <Link to="/">Home</Link>
           </li>
           <li className="navbar-item">
-            <a href={"/about"}>About me</a>
+            <Link to={"/about"}>About me</Link>
           </li>
           <li className="navbar-item">
-            {user.name ? (
-              <a href={"/login"}>Sign out, {user.name}</a>
+            {state.user.name ? (
+              <Link to={"/"} onClick={logout}>
+                Sign out, {state.user.name}
+              </Link>
             ) : (
-              <a href={"/login"}>Sign in</a>
+              <Link to={"/login"}>Sign in</Link>
             )}
           </li>
-          <li onClick={() => setUser(data)}>Test</li>
         </ul>
       </div>
     </div>
