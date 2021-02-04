@@ -73,7 +73,6 @@ function HomePage() {
   };
 
   const handleShowAddModal = (type) => {
-    console.log(1);
     dispatch({
       type: "SHOW_ADD_MODAL",
       payload: {

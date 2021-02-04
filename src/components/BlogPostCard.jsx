@@ -34,8 +34,6 @@ function BlogPostCard({ post }) {
         `https://5c3755177820ff0014d92711.mockapi.io/${post.type}s/${post.id}`
       )
       .then((answer) => {
-        console.log(answer);
-
         dispatch({
           type: `DELETE_${post.type.toUpperCase()}`,
           payload: {

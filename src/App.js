@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import BlogPostPage from "./pages/BlogPostPage";
 import LoginPage from "./pages/LoginPage";
 import ErrorPage from "./pages/ErrorPage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initialState);
@@ -16,10 +17,11 @@ function App() {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/login" component={LoginPage} />
+          <Route path="/about" component={AboutPage} />
           <Route path="/post/:id" component={BlogPostPage} />
           <Route path="/article/:id" component={BlogPostPage} />
           <Route>
-            <ErrorPage user={state.user} />
+            <ErrorPage />
           </Route>
         </Switch>
       </StateContext.Provider>

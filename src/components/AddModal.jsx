@@ -1,6 +1,8 @@
 import React from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { StateContext } from "../reducer";
+import axios from "axios";
+import { generatePostText } from "../utils";
 
 function AddModal() {
   const [state, dispatch] = React.useContext(StateContext);
@@ -8,7 +10,8 @@ function AddModal() {
     name: "",
     title: "",
     image: "",
-    description: "",
+    text: "",
+    createdAt: new Date(),
   });
 
   const handleEdit = (e) => {
@@ -19,9 +22,46 @@ function AddModal() {
     dispatch({
       type: "HIDE_ADD_MODAL",
     });
+
+    setNewPostData({
+      name: "",
+      title: "",
+      image: "",
+      text: "",
+      createdAt: new Date(),
+    });
   };
 
-  const handleSave = () => {};
+  const handleSave = () => {
+    axios
+      .post(
+        `https://5c3755177820ff0014d92711.mockapi.io/${state.addPostType}s`,
+        newPostData
+      )
+      .then(({ data }) => {
+        data = generatePostText(data);
+        data.type = state.addPostType;
+
+        if (state.addPostType === "post") {
+          data.image = "https://picsum.photos/400/300?" + data.id;
+          data.imageBig = "https://picsum.photos/1200/600?" + data.id;
+        } else {
+          data.imageBig = data.image;
+        }
+
+        dispatch({
+          type: `ADD_${state.addPostType.toUpperCase()}`,
+          payload: {
+            post: data,
+          },
+        });
+
+        handleClose();
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
 
   return (
     <Modal show={state.showAddModal} onHide={handleClose}>
@@ -54,12 +94,12 @@ function AddModal() {
               onChange={handleEdit}
             />
           </Form.Group>
-          <Form.Group controlId="description">
+          <Form.Group controlId="text">
             <Form.Label>Описание</Form.Label>
             <Form.Control
               as="textarea"
               rows={4}
-              value={newPostData.description}
+              value={newPostData.text}
               onChange={handleEdit}
             />
           </Form.Group>
@@ -69,7 +109,7 @@ function AddModal() {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleClose}>
+        <Button variant="primary" onClick={handleSave}>
           Save Changes
         </Button>
       </Modal.Footer>
